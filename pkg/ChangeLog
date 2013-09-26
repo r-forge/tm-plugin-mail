@@ -1,0 +1,47 @@
+2013-08-21  Ingo Feinerer <feinerer@logic.at>
+
+	* DESCRIPTION (Enhances): Removed.
+	* DESCRIPTION (License): Switch to GPL-3 (instead of GPL (>= 2)).
+	* R/doc.R (MailDocument): Avoid internal tm function.
+
+2013-03-19  Kurt Hornik  <Kurt.Hornik@wu.ac.at>
+
+	* DESCRIPTION (Version): New release.
+
+2013-03-11  Kurt Hornik  <Kurt.Hornik@wu.ac.at>
+
+	* man/readMail.Rd:
+	* man/removeSignature.Rd:
+	* man/removeCitation.Rd:
+	* man/threads.Rd:
+	Wrap wide Rd usage/examples lines.
+
+2013-03-07  Kurt Hornik  <Kurt.Hornik@wu.ac.at>
+
+	* man/MailDocument.Rd:
+	Wrap wide Rd usage lines.
+
+2012-05-24  Ingo Feinerer  <feinerer@logic.at>
+
+	* R/mail.R (removeCitation): Add option to remove quotation header.
+	Implemented by Wolfgang Mauerer.
+
+	* R/mail.R (threads): Major rewrite which parses the References
+	header. Implemented by Wolfgang Mauerer.
+
+2012-05-14  Ingo Feinerer  <feinerer@logic.at>
+
+	* R/mail.R (threads): Do not fail on multiple In-Reply-To fields.
+	Identified and fixed by Wolfgang Mauerer.
+
+2010-07-07  Ingo Feinerer  <feinerer@logic.at>
+
+	* R/mail.R (convert_mbox_eml): Produce file names with padding.
+
+2010-05-11  Ingo Feinerer  <feinerer@logic.at>
+
+	* NAMESPACE: Export as.PlainTextDocument() for mail documents.
+
+2009-09-29  Ingo Feinerer  <feinerer@logic.at>
+
+	* reader.R (readMail): Extract meta data only from the e-mail header.
