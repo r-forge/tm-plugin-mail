@@ -1,6 +1,7 @@
 import(tm)
 
 export("convert_mbox_eml",
+       "MBoxSource",
        "readMail",
        "removeCitation",
        "removeMultipart",
@@ -11,3 +12,7 @@ S3method("as.PlainTextDocument", "MailDocument")
 S3method("removeCitation", "MailDocument")
 S3method("removeMultipart", "MailDocument")
 S3method("removeSignature", "MailDocument")
+
+S3method("eoi", "MBoxSource")
+S3method("getElem", "MBoxSource")
+S3method("pGetElem", "MBoxSource")

@@ -1,3 +1,8 @@
+2013-09-26  Ingo Feinerer <feinerer@logic.at>
+
+	* R/source.R (MBoxSource): Add source to process mbox files.
+	Contributed by Johannes Ebke.
+
 2013-08-21  Ingo Feinerer <feinerer@logic.at>
 
 	* DESCRIPTION (Enhances): Removed.
