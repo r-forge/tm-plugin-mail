@@ -15,7 +15,7 @@ function(mbox, encoding = "unknown")
             lines[message.nr] <- lines[message.nr] + 1
     }
     s <- tm::Source(encoding = encoding, length = length(lines),
-                    vectorized = TRUE, class = "MBoxSource")
+                    class = "MBoxSource")
     s$File <- f
     s$Mbox <- mbox
     s$MessageOffsets <- offsets
@@ -43,6 +43,3 @@ function(x)
                  uri = x$Mbox)
         })
 }
-
-eoi.MBoxSource <-
-function(x) length(x$MessageOffsets) <= x$Position
