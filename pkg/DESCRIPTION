@@ -1,10 +1,11 @@
 Package: tm.plugin.mail
 Title: Text Mining E-Mail Plug-In
-Version: 0.0-8
-Date: 2013-09-27
+Version: 0.1
+Date: 2014-04-21
 Authors@R: c(person("Ingo", "Feinerer", role = c("aut", "cre"),
                     email = "feinerer@logic.at"),
              person("Wolfgang", "Mauerer", role = c("aut")))
-Imports: tm (>= 0.5-10)
-Description: A plug-in for the tm text mining framework providing mail handling functionality.
+Imports: NLP, tm (>= 0.6)
+Description: A plug-in for the tm text mining framework providing mail handling
+  functionality.
 License: GPL-3

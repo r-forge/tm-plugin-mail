@@ -1,3 +1,10 @@
+2014-04-21  Ingo Feinerer <feinerer@logic.at>
+
+	* ChangeLog: Not maintained as a separate file anymore. Please consult
+	the tm-plugin-mail Subversion log messages (available at
+	https://r-forge.r-project.org/scm/viewvc.php/pkg/?root=tm-plugin-mail)
+	instead.
+
 2013-09-26  Ingo Feinerer <feinerer@logic.at>
 
 	* R/source.R (MBoxSource): Add source to process mbox files.

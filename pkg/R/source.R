@@ -1,8 +1,9 @@
 MBoxSource <-
-function(mbox, encoding = "unknown")
+function(mbox, encoding = "")
 {
     f <- file(mbox)
     open(f)
+    on.exit(close(f))
     message.nr <- 0
     offsets <- integer(0)
     lines <- integer(0)
@@ -14,32 +15,19 @@ function(mbox, encoding = "unknown")
         } else
             lines[message.nr] <- lines[message.nr] + 1
     }
-    s <- tm::Source(encoding = encoding, length = length(lines),
-                    class = "MBoxSource")
-    s$File <- f
-    s$Mbox <- mbox
-    s$MessageOffsets <- offsets
-    s$MessageLines <- lines
-    s
+    SimpleSource(encoding = encoding, length = length(lines), reader = readMail,
+                 mbox = mbox, msgOffsets = offsets, msgLines = lines,
+                 class = "MBoxSource")
 }
 
 getElem.MBoxSource <-
 function(x)
 {
-    seek(x$File, x$MessageOffsets[x$Position])
-    list(content = readLines(x$File, x$MessageLines[x$Position],
-                             encoding = x$Encoding),
-         uri = x$Mbox)
-}
-
-pGetElem.MBoxSource <-
-function(x)
-{
-    lapply(1:length(x$MessageOffsets),
-        function(y) {
-            seek(x$File, x$MessageOffsets[y])
-            list(content = readLines(x$File, x$MessageLines[y],
-                                     encoding = x$Encoding),
-                 uri = x$Mbox)
-        })
+    f <- file(x$mbox)
+    open(f)
+    on.exit(close(f))
+    seek(f, x$msgOffsets[x$position])
+    list(content = iconv(readLines(f, x$msgLines[x$position]),
+                         x$encoding, "UTF-8", "byte"),
+         uri = x$mbox)
 }

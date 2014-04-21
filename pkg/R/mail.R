@@ -42,8 +42,7 @@ removeCitation.character <- function(x, removeQuoteHeader = FALSE) {
     if (length(citations)) x[-citations] else x
 }
 removeCitation.MailDocument <- function(x, removeQuoteHeader = FALSE) {
-    # tm::Content(x) <- ... does not work :-(
-    Content(x) <- removeCitation.character(tm::Content(x), removeQuoteHeader)
+    content(x) <- removeCitation.character(content(x), removeQuoteHeader)
     x
 }
 
@@ -82,8 +81,7 @@ removeMultipart.character <- function(x) {
     if (length(r) == 0) x else r
 }
 removeMultipart.MailDocument <- function(x) {
-    # tm::Content(x) <- ... does not work :-(
-    Content(x) <- removeMultipart.character(tm::Content(x))
+    content(x) <- removeMultipart.character(content(x))
     x
 }
 
@@ -105,8 +103,7 @@ removeSignature.character <- function(x, marks = character(0)) {
     else x
 }
 removeSignature.MailDocument <- function(x, marks = character(0)) {
-    # tm::Content(x) <- ... does not work :-(
-    Content(x) <- removeSignature.character(tm::Content(x), marks)
+    content(x) <- removeSignature.character(content(x), marks)
     x
 }
 
@@ -132,7 +129,7 @@ threads <- function(x)
     tid <- 1
     threadIDs <- threadLevels <- integer(length(x))
     for (i in seq_along(x)) {
-        messageID <- tm::ID(x[[i]])
+        messageID <- meta(x[[i]], "id")
         parentID <- gsub("In-Reply-To: ", "", grep("^In-Reply-To:", attr(x[[i]], "Header"), value = TRUE, useBytes = TRUE))
         refID <- gsub("References: ", "", grep("^References:", attr(x[[i]], "Header"), value = TRUE, useBytes = TRUE))
         refID <- sub(",$", "", refID)
