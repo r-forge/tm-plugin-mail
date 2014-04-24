@@ -6,10 +6,11 @@
   Remove non-text parts from multipart e-mail messages.
 }
 \usage{
-\method{removeMultipart}{MailDocument}(x)
+\method{removeMultipart}{MailDocument}(x, \dots)
 }
 \arguments{
   \item{x}{A mail document.}
+  \item{\dots}{Not used.}
 }
 \seealso{
   \code{\link{removeCitation}} to remove e-mail citations, and

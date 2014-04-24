@@ -7,13 +7,14 @@
   message.
 }
 \usage{
-\method{removeCitation}{MailDocument}(x, removeQuoteHeader = FALSE)
+\method{removeCitation}{MailDocument}(x, \dots)
 }
 \arguments{
   \item{x}{A mail document.}
-  \item{removeQuoteHeader}{Remove the quotation header (of the type
-    \dQuote{On \emph{date}, \emph{author} wrote:}) that proceeds the
-    quoted message.}
+  \item{\dots}{the argument \code{removeQuoteHeader} (default \code{FALSE})
+    giving a logical indicating if the quotation header (of the type
+    \dQuote{On \emph{date}, \emph{author} wrote:}) that proceeds the quoted
+    message should be removed.}
 }
 \seealso{
   \code{\link{removeMultipart}} to remove non-text parts from multipart

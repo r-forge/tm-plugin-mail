@@ -41,10 +41,8 @@ removeCitation.character <- function(x, removeQuoteHeader = FALSE) {
     }
     if (length(citations)) x[-citations] else x
 }
-removeCitation.MailDocument <- function(x, removeQuoteHeader = FALSE) {
-    content(x) <- removeCitation.character(content(x), removeQuoteHeader)
-    x
-}
+removeCitation.MailDocument <-
+    content_transformer(removeCitation.character)
 
 # Remove non-text parts from multipart e-mail messages
 removeMultipart <- function(x) UseMethod("removeMultipart", x)
@@ -80,10 +78,8 @@ removeMultipart.character <- function(x) {
 
     if (length(r) == 0) x else r
 }
-removeMultipart.MailDocument <- function(x) {
-    content(x) <- removeMultipart.character(content(x))
-    x
-}
+removeMultipart.MailDocument <-
+    content_transformer(removeMultipart.character)
 
 # Remove e-mail signatures
 removeSignature <- function(x, marks) UseMethod("removeSignature", x)
@@ -102,10 +98,8 @@ removeSignature.character <- function(x, marks = character(0)) {
     if (signatureStart <= length(x)) x[-(signatureStart:length(x))]
     else x
 }
-removeSignature.MailDocument <- function(x, marks = character(0)) {
-    content(x) <- removeSignature.character(content(x), marks)
-    x
-}
+removeSignature.MailDocument <-
+    content_transformer(removeSignature.character)
 
 get.thread.id <- function(parentID, ht) {
     threadID <- NA

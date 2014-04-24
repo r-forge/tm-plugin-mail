@@ -6,13 +6,14 @@
   Remove signature lines from an e-mail message.
 }
 \usage{
-\method{removeSignature}{MailDocument}(x, marks = character(0))
+\method{removeSignature}{MailDocument}(x, \dots)
 }
 \arguments{
   \item{x}{A mail document.}
-  \item{marks}{Signature identifications marks (in form of
-    regular expression patterns). Note that the official signature start
-    mark \code{-- } (dash dash blank) is always considered.}
+  \item{\dots}{the argument \code{marks} giving a character of signature
+    identifications marks (in form of regular expression patterns). Note that
+    the official signature start mark \code{-- } (dash dash blank) is always
+    considered.}
 }
 \seealso{
   \code{\link{removeCitation}} to remove e-mail citations, and

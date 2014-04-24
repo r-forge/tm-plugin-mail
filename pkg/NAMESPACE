@@ -1,5 +1,6 @@
 importFrom("NLP", "content", "content<-", "meta")
-importFrom("tm", "getElem", "PlainTextDocument", "SimpleSource")
+importFrom("tm",
+           "content_transformer", "getElem", "PlainTextDocument", "SimpleSource")
 
 export("convert_mbox_eml",
        "MBoxSource",
