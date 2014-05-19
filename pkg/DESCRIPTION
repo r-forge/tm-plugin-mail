@@ -5,7 +5,7 @@ Date: 2014-04-24
 Authors@R: c(person("Ingo", "Feinerer", role = c("aut", "cre"),
                     email = "feinerer@logic.at"),
              person("Wolfgang", "Mauerer", role = c("aut")))
-Imports: NLP, tm (>= 0.6)
+Imports: NLP (>= 0.1-2), tm (>= 0.6)
 Description: A plug-in for the tm text mining framework providing mail handling
   functionality.
 License: GPL-3
