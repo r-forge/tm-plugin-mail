@@ -32,6 +32,6 @@ function(DateFormat = "%d %B %Y %H:%M:%S")
                         grep("^Subject:", header, value = TRUE, useBytes = TRUE))
 
         MailDocument(content, author, datetimestamp, character(0), header, heading,
-                     if (length(mid)) mid[1] else id, origin, language)
+                     if (length(mid)) mid[1] else id, language, origin)
     }
 }, class = c("FunctionGenerator", "function"))
