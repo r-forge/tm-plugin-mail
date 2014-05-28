@@ -12,8 +12,8 @@ MailDocument(x,
              header = character(0),
              heading = character(0),
              id = character(0),
-             origin = character(0),
              language = character(0),
+             origin = character(0),
              \dots,
              meta = NULL)
 }
@@ -27,9 +27,9 @@ MailDocument(x,
   \item{header}{a character giving the mail header.}
   \item{heading}{a character giving the title or a short heading.}
   \item{id}{a character giving a unique identifier.}
-  \item{origin}{a character giving information on the source and origin.}
   \item{language}{a character giving the language (preferably as \acronym{IETF}
     language tags).}
+  \item{origin}{a character giving information on the source and origin.}
   \item{\dots}{user-defined document metadata tag-value pairs.}
   \item{meta}{a named list or \code{NULL} (default) giving all metadata. If set
     all other metadata arguments are ignored.}
