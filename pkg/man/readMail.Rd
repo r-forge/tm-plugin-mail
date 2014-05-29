@@ -27,7 +27,9 @@ readMail(DateFormat = "\%d \%B \%Y \%H:\%M:\%S")
       text document.}
   }
   The function returns a \code{\link{MailDocument}} representing the text
-  and metadata extracted from \code{elem$content}.
+  and metadata extracted from \code{elem$content}. The argument \code{id} is
+  used as fallback if no corresponding metadata entry is found in
+  \code{elem$content}.
 }
 \seealso{
   \code{\link[tm]{Reader}} for basic information on the reader infrastructure
