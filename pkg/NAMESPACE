@@ -14,4 +14,6 @@ S3method("removeCitation", "MailDocument")
 S3method("removeMultipart", "MailDocument")
 S3method("removeSignature", "MailDocument")
 
+S3method("close", "MBoxSource")
 S3method("getElem", "MBoxSource")
+S3method("open", "MBoxSource")
