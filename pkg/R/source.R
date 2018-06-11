@@ -7,8 +7,9 @@ function(mbox, encoding = "")
 }
 
 close.MBoxSource <-
-function(x)
+function(con, ...)
 {
+    x <- con
     if (!is.null(x$file)) {
         close(x$file)
         x$file <- NULL
@@ -29,8 +30,9 @@ function(x)
 }
 
 open.MBoxSource <-
-function(x)
+function(con, ...)
 {
+    x <- con
     x$file <- file(x$mbox)
     open(x$file)
     message.nr <- 0
