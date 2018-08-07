@@ -25,8 +25,10 @@ threads(x)
 \examples{
 require("tm")
 newsgroup <- system.file("mails", package = "tm.plugin.mail")
-news <- VCorpus(DirSource(newsgroup), readerControl = list(reader = readMail))
-sapply(news, function(x) meta(x, "id"))
-lapply(news, function(x) grep("References", attr(x, "Header"), value = TRUE))
-threads(news)
+news <- VCorpus(DirSource(newsgroup),
+                readerControl = list(reader = readMail))
+vapply(news, meta, "id", FUN.VALUE = "")
+lapply(news, function(x) meta(x, "header")$References)
+(info <- threads(news))
+lengths(split(news, info$ThreadID))
 }

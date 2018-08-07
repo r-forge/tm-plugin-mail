@@ -24,7 +24,9 @@ function(x)
     stopifnot(!is.null(x$file))
 
     seek(x$file, x$msgOffsets[x$position])
-    list(content = iconv(readLines(x$file, x$msgLines[x$position]),
+    list(content = iconv(readLines(x$file,
+                                   x$msgLines[x$position],
+                                   warn = FALSE),
                          x$encoding, "UTF-8", "byte"),
          uri = x$mbox)
 }
@@ -38,8 +40,8 @@ function(con, ...)
     message.nr <- 0
     offsets <- integer(0)
     lines <- integer(0)
-    while (length(line <- readLines(x$file, 1)) == 1) {
-        if (grepl("^From ", line, useBytes = TRUE)) {
+    while (length(line <- readLines(x$file, 1L, warn = FALSE)) == 1L) {
+        if (startsWith(line, "From ")) {
             message.nr <- message.nr + 1
             offsets[message.nr] <- seek(x$file)
             lines[message.nr] <- 0

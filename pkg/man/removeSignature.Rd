@@ -11,9 +11,9 @@
 \arguments{
   \item{x}{A mail document.}
   \item{\dots}{the argument \code{marks} giving a character of signature
-    identifications marks (in form of regular expression patterns). Note that
-    the official signature start mark \code{-- } (dash dash blank) is always
-    considered.}
+    identifications marks (in form of regular expression patterns).
+    Note that the official signature start mark \code{-- } (dash dash
+    blank) is always considered.}
 }
 \seealso{
   \code{\link{removeCitation}} to remove e-mail citations, and
@@ -23,7 +23,8 @@
 \examples{
 require("tm")
 newsgroup <- system.file("mails", package = "tm.plugin.mail")
-news <- VCorpus(DirSource(newsgroup), readerControl = list(reader = readMail))
+news <- VCorpus(DirSource(newsgroup),
+                readerControl = list(reader = readMail))
 news[[7]]
 removeSignature(news[[7]], marks = "^[+]-*[+]$")
 }
