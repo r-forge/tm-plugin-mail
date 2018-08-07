@@ -1,10 +1,14 @@
 Package: tm.plugin.mail
 Title: Text Mining E-Mail Plug-in
-Version: 0.1-1.1
-Date: 2014-09-16
-Authors@R: c(person("Ingo", "Feinerer", role = c("aut", "cre"),
-                    email = "feinerer@logic.at"),
-             person("Wolfgang", "Mauerer", role = c("aut")))
+Version: 0.1-2
+Date: 2018-08-07
+Authors@R: c(person("Ingo", "Feinerer", role = c("aut"),
+                    email = "feinerer@logic.at",
+		    comment = c(ORCID = "0000-0001-7656-8338")),
+             person("Wolfgang", "Mauerer", role = c("aut")),
+	     person("Kurt", "Hornik", role = c("aut", "cre"),
+	            email = "Kurt.Hornik@R-project.org",
+                    comment = c(ORCID = "0000-0003-4198-9911")))
 Imports: NLP (>= 0.1-2), tm (>= 0.6-1)
 Description: A plug-in for the tm text mining framework providing mail handling
   functionality.
