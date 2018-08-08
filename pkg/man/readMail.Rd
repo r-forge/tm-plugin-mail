@@ -5,11 +5,12 @@
   Return a function which reads in an electronic mail document.
 }
 \usage{
-readMail(DateFormat = "\%d \%B \%Y \%H:\%M:\%S")
+readMail(DateFormat = character())
 }
 \arguments{
-  \item{DateFormat}{A character giving the format of the \dQuote{Date}
-    header in the mail document.}
+  \item{DateFormat}{A character vector giving date-time formats for the
+    \dQuote{Date} header field in the mail document.  By default, the
+    \dQuote{basic} formats of RFC 5322 are tried.}
 }
 \details{
   Formally this function is a function generator, i.e., it returns a
@@ -35,7 +36,9 @@ readMail(DateFormat = "\%d \%B \%Y \%H:\%M:\%S")
   \code{\link[tm]{Reader}} for basic information on the reader
   infrastructure employed by package \pkg{tm}.
 
-  \code{\link{strptime}} for date format specifications.
+  \code{\link{strptime}} for date-time format specifications.
+
+  RFC 5322 (\url{https://tools.ietf.org/html/rfc5322}).
 }
 \examples{
 require("tm")
