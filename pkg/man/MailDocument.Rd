@@ -6,14 +6,14 @@
 }
 \usage{
 MailDocument(x,
-             author = character(0),
+             author = character(),
              datetimestamp = as.POSIXlt(Sys.time(), tz = "GMT"),
-             description = character(0),
-             header = character(0),
-             heading = character(0),
-             id = character(0),
-             language = character(0),
-             origin = character(0),
+             description = character(),
+             header = character(),
+             heading = character(),
+             id = character(),
+             language = character(),
+             origin = character(),
              \dots,
              meta = NULL)
 }

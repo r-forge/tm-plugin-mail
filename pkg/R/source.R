@@ -37,16 +37,16 @@ function(con, ...)
     x <- con
     x$file <- file(x$mbox)
     open(x$file)
-    message.nr <- 0
-    offsets <- integer(0)
-    lines <- integer(0)
+    message.nr <- 0L
+    offsets <- numeric()
+    lines <- integer()
     while (length(line <- readLines(x$file, 1L, warn = FALSE)) == 1L) {
         if (startsWith(line, "From ")) {
-            message.nr <- message.nr + 1
+            message.nr <- message.nr + 1L
             offsets[message.nr] <- seek(x$file)
-            lines[message.nr] <- 0
+            lines[message.nr] <- 0L
         } else
-            lines[message.nr] <- lines[message.nr] + 1
+            lines[message.nr] <- lines[message.nr] + 1L
     }
     x$length <- length(lines)
     x$msgLines <- lines

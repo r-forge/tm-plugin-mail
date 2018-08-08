@@ -63,7 +63,7 @@ function(x)
     ## <http://en.wikipedia.org/wiki/Multipart_message#Multipart_Messages>
     ## We are only interested in text/plain parts
     i <- grep("^Content-Type: text/plain", x, useBytes = TRUE)
-    r <- character(0)
+    r <- character()
     k <- 2L
     for (j in i) {
         end <- if (k <= length(i)) i[k] - 1L else length(x)
@@ -102,7 +102,7 @@ function(x, marks)
     UseMethod("removeSignature", x)
 
 removeSignature.character <-
-function(x, marks = character(0))
+function(x, marks = character())
 {
     ## "---" is often added to Sourceforge mails
     ## "___" and "***" are also common, i.e.,
