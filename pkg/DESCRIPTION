@@ -1,6 +1,6 @@
 Package: tm.plugin.mail
 Title: Text Mining E-Mail Plug-in
-Version: 0.1-2
+Version: 0.1-2.1
 Date: 2018-08-07
 Authors@R: c(person("Ingo", "Feinerer", role = c("aut"),
                     email = "feinerer@logic.at",
