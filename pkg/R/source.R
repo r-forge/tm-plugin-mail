@@ -12,6 +12,8 @@ function(con, ...)
     x <- con
     if (!is.null(x$file)) {
         close(x$file)
+        if(!is.null(x$compress))
+            unlink(x$file)
         x$file <- NULL
         x$length <- x$msgLines <- x$msgOffsets <- 0
     }
@@ -35,7 +37,29 @@ open.MBoxSource <-
 function(con, ...)
 {
     x <- con
-    x$file <- file(x$mbox)
+    ## If the mbox source was compressed, we need to decompress, as
+    ## seeking does not work otherwise ...
+    magic <- readBin(x$mbox, "raw", n = 5L)
+    z <- if(all(magic[1L : 2L] == c(0x1f, 0x8b)))
+             gzfile(x$mbox)
+         else if(rawToChar(magic[1L : 3L]) == "BZh")
+             bzfile(x$mbox)
+         else if(rawToChar(magic[1L : 5L]) ==
+                 paste0(rawToChar(as.raw(0xfd)), "7zXZ"))
+             xzfile(x$mbox)
+         else
+             NULL
+    if(!is.null(z)) {
+        lines <- readLines(z, warn = FALSE)
+        close(z)
+        ## Text connections are not seekable, so we really need a
+        ## tempfile ...
+        f <- tempfile()
+        writeLines(lines, f, useBytes = TRUE)
+        x$compress <- TRUE
+        x$file <- file(f)
+    } else
+        x$file <- file(x$mbox)
     open(x$file)
     message.nr <- 0L
     offsets <- numeric()
