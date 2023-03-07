@@ -12,8 +12,11 @@ export("convert_mbox_eml",
        "threads")
 
 S3method("removeCitation", "MailDocument")
+S3method("removeCitation", "character")
 S3method("removeMultipart", "MailDocument")
+S3method("removeMultipart", "character")
 S3method("removeSignature", "MailDocument")
+S3method("removeSignature", "character")
 
 S3method("close", "MBoxSource")
 S3method("getElem", "MBoxSource")
