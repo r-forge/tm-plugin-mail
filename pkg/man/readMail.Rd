@@ -38,7 +38,7 @@ readMail(DateFormat = character())
 
   \code{\link{strptime}} for date-time format specifications.
 
-  RFC 5322 (\url{https://tools.ietf.org/html/rfc5322}).
+  RFC 5322 (\url{https://www.rfc-editor.org/rfc/rfc5322}).
 }
 \examples{
 require("tm")
