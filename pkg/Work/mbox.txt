@@ -1,0 +1,120 @@
+See also
+
+  <https://en.wikipedia.org/wiki/E-mail#Internet_e-mail_format>
+  <https://en.wikipedia.org/wiki/Multipart_message#Multipart_Messages>
+  <https://en.wikipedia.org/wiki/Mbox>
+
+Library of Congress has specs for "MBOX Email Format", see
+
+  <https://www.loc.gov/preservation/digital/formats/fdd/fdd000383.shtml>
+
+in turn pointing to
+
+  <https://www.loc.gov/preservation/digital/formats/fdd/fdd000384.shtml>
+  <https://www.loc.gov/preservation/digital/formats/fdd/fdd000385.shtml>
+
+for the mboxo and mboxrd extensions.  The spec says
+
+  A message encoded in MBOX format begins with a "From " line, continues
+  with a series of non-"From " lines, and ends with a blank line.
+
+  A "From " line means any line in the message or header that  begins
+  with the five characters 'F', 'r', 'o', 'm', and ' ' (space). 
+
+  The "From " line structure is 
+
+     From sender date moreinfo:
+
+  * sender, usually the envelope sender of the message (e.g.,
+    sender@sender.com) is one word without spaces or tabs 
+
+  * date is the delivery date of the message which always contains
+    exactly 24 characters in Standard C asctime format (i.e. in English,
+    with the redundant weekday, and without timezone information) 
+
+  * moreinfo is optional and it may contain arbitrary information.
+
+The Emacs RMAIL code in ~/src/org/gnu/emacs/lisp/mail has
+
+  rmail-unix-mail-delimiter
+  rmail-mbox-format
+
+with
+
+rmail.el:(defcustom rmail-mbox-format 'mboxrd
+rmail.el:See also `unrmail-mbox-format'."
+rmailedit.el:  (let ((fromline (if (or (eq 'mboxo rmail-mbox-format)
+unrmail.el:(defcustom unrmail-mbox-format 'mboxrd
+unrmail.el:See also `rmail-mbox-format'."
+unrmail.el:The variable `unrmail-mbox-format' controls which mbox format to use."
+unrmail.el:		  (fromline (if (eq 'mboxrd unrmail-mbox-format)
+
+(defcustom rmail-mbox-format 'mboxrd
+  "The mbox format that your system uses.
+There is no way to determine this, so you should set the appropriate value.
+The formats quote lines containing \"From \" differently.
+The choices are:
+  `mboxo' : lines that start with \"From \" quoted as \">From \"
+  `mboxrd': lines that start with \">*From \" quoted with another \">\"
+The `mboxo' format is ambiguous, in that one cannot know whether
+a line starting with \">From \" originally had a \">\" or not.
+
+It is not critical to set this to the correct value; it only affects
+how Rmail displays lines starting with \">*From \" in non-MIME messages.
+
+and
+
+(defvar rmail-unix-mail-delimiter
+  (let ((time-zone-regexp
+         (concat "\\([A-Z]?[A-Z]?[A-Z][A-Z]\\( DST\\)?"
+                 "\\|[-+]?[0-9][0-9][0-9][0-9]"
+                 "\\|"
+                 "\\) *")))
+    (concat
+     "From "
+
+     ;; Many things can happen to an RFC 822 (or later) mailbox before it is
+     ;; put into a `From' line.  The leading phrase can be stripped, e.g.
+     ;; `Joe <@w.x:joe@y.z>' -> `<@w.x:joe@y.z>'.  The <> can be stripped, e.g.
+     ;; `<@x.y:joe@y.z>' -> `@x.y:joe@y.z'.  Everything starting with a CRLF
+     ;; can be removed, e.g.
+     ;;         From: joe@y.z (Joe      K
+     ;;                 User)
+     ;; can yield `From joe@y.z (Joe    K Fri Mar 22 08:11:15 1996', and
+     ;;         From: Joe User
+     ;;                 <joe@y.z>
+     ;; can yield `From Joe User Fri Mar 22 08:11:15 1996'.
+     ;; The mailbox can be removed or be replaced by white space, e.g.
+     ;;         From: "Joe User"{space}{tab}
+     ;;                 <joe@y.z>
+     ;; can yield `From {space}{tab} Fri Mar 22 08:11:15 1996',
+     ;; where {space} and {tab} represent the Ascii space and tab characters.
+     ;; We want to match the results of any of these manglings.
+     ;; The following regexp rejects names whose first characters are
+     ;; obviously bogus, but after that anything goes.
+     "\\([^\0-\b\n-\r\^?].*\\)? "
+
+     ;; The time the message was sent.
+     "\\([^\0-\r \^?]+\\) +"                            ; day of the week
+     "\\([^\0-\r \^?]+\\) +"                            ; month
+     "\\([0-3]?[0-9]\\) +"                              ; day of month
+     "\\([0-2][0-9]:[0-5][0-9]\\(:[0-6][0-9]\\)?\\) *"  ; time of day
+
+     ;; Perhaps a time zone, specified by an abbreviation, or by a
+     ;; numeric offset.
+     time-zone-regexp
+
+     ;; The year.
+     " \\([0-9][0-9]+\\) *"
+
+     ;; On some systems the time zone can appear after the year, too.
+     time-zone-regexp
+
+     ;; Old uucp cruft.
+     "\\(remote from .*\\)?"
+
+     "\n"))
+  "Regexp matching the delimiter of messages in UNIX mail format
+\(UNIX From lines), minus the initial ^.  Note that if you change
+this expression, you must change the code in `rmail-nuke-pinhead-header'
+that knows the exact ordering of the \\( \\) subexpressions.")
