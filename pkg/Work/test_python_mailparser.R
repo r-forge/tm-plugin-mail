@@ -4,6 +4,12 @@
 ##   <https://pypi.org/project/mail-parser/#files>
 ## and extracted into e.g.
 ##   ~/tmp/mail-parser-3.15.0/
+## Alternatively, install via
+##   python3 -m venv ~/.virtualenvs/mailparser
+##   ~/.virtualenvs/mailparser/bin/pip install mail-parser
+## Then one can call directly as
+##   ~/.virtualenvs/mailparser/bin/mailparser -h
+## and use the installed code base from ~/.virtualenvs/mailparser.
 
 ## To test how well this works for us, we can do the following:
 
