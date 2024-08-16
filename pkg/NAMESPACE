@@ -1,7 +1,8 @@
 importFrom("NLP", "content", "content<-", "meta")
 importFrom("tm",
-           "content_transformer", "getElem", "PlainTextDocument",
-           "SimpleSource")
+           "content_transformer", "PlainTextDocument",
+           "SimpleSource", "eoi", "getElem", "stepNext")
+importFrom("reticulate", "import", "iterate")
 
 export("convert_mbox_eml",
        "MBoxSource",
@@ -21,3 +22,5 @@ S3method("removeSignature", "character")
 S3method("close", "MBoxSource")
 S3method("getElem", "MBoxSource")
 S3method("open", "MBoxSource")
+
+S3method("content<-", "MailDocument")

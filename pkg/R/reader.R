@@ -1,38 +1,54 @@
-## Author: Ingo Feinerer
-
 readMail <- structure(
 function(DateFormat = character())
 {
     stopifnot(is.character(DateFormat))
 
     function(elem, language, id) {
-        mail <- elem$content
+        bad <- character()
+        msg <- tryCatch(.py_msg_from_content(elem$content),
+                        error = identity)
+        if(inherits(msg, "error"))
+            bad <- conditionMessage(msg)
+        else {
+            hdr <- tryCatch(.py_get_hdr_from_msg(msg),
+                            error = identity)
+            if(inherits(hdr, "error"))
+                bad <- conditionMessage(hdr)
+        }
+        if(length(bad)) {
+            ## Parsing or getting headers failed: let's get the headers
+            ## ourselves.
+            msg <- elem$content
+            idx <- Position(function(e) e == "", msg)
+            hdr <- msg[seq_len(idx - 1L)]
+            hdr <- parse_RFC_5322_message_header(hdr)
+            ## Leave the body empty (too much work to reliably extract
+            ## *text* from it).
+            bdy <- character()
+        } else {
+            bdy <- tryCatch(.py_get_bdy_from_msg(msg),
+                            error = identity)
+            if(inherits(bdy, "error")) {
+                bad <- conditionMessage(bdy)
+                bdy <- character()
+            }
+        }
 
-        ## The header is separated from the body by a blank line.
-        ## <http://en.wikipedia.org/wiki/E-mail#Internet_e-mail_format>
-        index <- Position(function(e) e == "", mail)
-
-        header <- mail[1L : (index - 1L)]
-        content <- mail[(index + 1L) : length(mail)]
-
-        header <- parse_RFC_5322_message_header(header)
-
-        datetimestamp <-
-            parse_RFC_5322_date_time(header$Date, DateFormat)
-        mid <- header$"Message-ID"
-
-        MailDocument(content,
-                     header$From,
-                     datetimestamp,
-                     character(),
-                     header,
-                     header$Subject,
-                     if (length(mid)) mid[1L] else id,
+        dts <- parse_RFC_5322_date_time(hdr$Date, DateFormat)
+        mid <- hdr$"Message-ID"
+        MailDocument(bdy,
+                     hdr$From,
+                     dts,
+                     character(), 
+                     hdr,
+                     hdr$Subject,
+                     if(length(mid)) mid[1L] else id,
                      language,
-                     header$Newsgroups)
+                     hdr$Newsgroups,
+                     problems = bad)
     }
 }, class = c("FunctionGenerator", "function"))
-
+    
 parse_RFC_5322_message_header <-
 function(x)
 {
@@ -51,6 +67,9 @@ function(x)
     ## max numbers of times fields may occur in the header, and there
     ## are fields which may occur arbitrarily often.  So we must parse
     ## into a *list*.
+
+    ## Raw headers should be all ASCII, but not everone complies ...
+    x <- iconv(x, to = "UTF-8", sub = "byte")
     
     p <- "^([\041-\071\073-\176]+): *(.*)"
     i <- grepl(p, x, perl = TRUE)
@@ -87,3 +106,83 @@ function(x, format = character())
 
     y
 }
+
+.py_msg_from_content <-
+function(x)
+{
+    .py_email$message_from_bytes(charToRaw(paste(x, collapse = "\n")),
+                                 policy = .py_email$policy$default)
+}
+
+.py_get_hdr_from_msg <-
+function(msg)
+{
+    hdr <- as.list(msg$values())
+    names(hdr) <- msg$keys()
+    hdr
+}
+
+.py_get_bdy_from_msg <-
+function(msg)
+{
+    charset <- msg$get_content_charset()
+    ## Avoid
+    ##   LookupError: unknown encoding: X-UNKNOWN
+    ## errors:
+    if(!is.null(charset) &&
+       inherits(tryCatch(.py_codecs$lookup(charset),
+                         error = identity),
+                "error"))
+        msg$set_charset("us-ascii")
+    ## Ideally we'd get encoding with surrogateescapes ...
+    one <- function(e) {
+        ct <- e$get_content_type()
+        if(ct == "text/plain")
+            structure(e$get_content(), names = "plain")
+        else if(ct == "text/html")
+            structure(e$get_content(), names = "html")
+        else
+            character()
+    }
+    if(msg$is_multipart()) {
+        bdy <- lapply(iterate(msg$iter_parts()), one)
+        structure(unlist(bdy), names = unlist(lapply(bdy, names)))
+    }
+    else
+        one(msg)
+}
+
+## Legacy reader, modulo doing everything in bytes.
+readMailLegacy <- structure(
+function(DateFormat = character())
+{
+    stopifnot(is.character(DateFormat))
+
+    function(elem, language, id) {
+        msg <- elem$content
+        idx <- Position(function(e) e == "", msg)
+        hdr <- msg[seq_len(idx - 1L)]
+        bdy <- msg[seq.int(idx + 1L, length(msg))]
+        hdr <- parse_RFC_5322_message_header(hdr)
+        dts <- parse_RFC_5322_date_time(hdr$Date, DateFormat)
+        mid <- hdr$"Message-ID"
+        MailDocument(bdy,
+                     hdr$From,
+                     dts,
+                     character(), 
+                     hdr,
+                     hdr$Subject,
+                     if(length(mid)) mid[1L] else id,
+                     language,
+                     hdr$Newsgroups)
+    }
+},
+class = c("FunctionGenerator", "function"))
+
+## Simple reader for extracting the raw bytes of each message for
+## subsequent experimenting.
+readMailBytes <- structure(
+function() {
+    function(elem, language, id) elem$content
+},
+class = c("FunctionGenerator", "function"))

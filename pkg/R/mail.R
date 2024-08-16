@@ -1,31 +1,20 @@
 convert_mbox_eml <-
-function(mbox, dir)
+function(mbox, dir, format = "mbox", delim = NULL)
 {
     dir.create(dir, recursive = TRUE)
-    content <- readLines(mbox)
-    counter <- start <- end <- 1L
-    nMessages <- sum(startsWith(content, "From "))
-    fmt <- paste0("%0", nchar(nMessages), "d")
-    needWrite <- FALSE
-    for (i in seq_along(content)) {
-        if (startsWith(content[i], "From ")) {
-            end <- i - 1L
-            if (needWrite && (start <= end)) {
-                con <- file(file.path(dir, sprintf(fmt, counter)))
-                writeLines(content[start : end], con)
-                close(con)
-                needWrite <- FALSE
-                counter <- counter + 1L
-            }
-            start <- i
-            needWrite <- TRUE
-        }
-    }
-    if (needWrite) {
-        con <- file(file.path(dir, sprintf(fmt, counter)))
-        writeLines(content[start : length(content)], con)
+    x <- MBoxSource(mbox, format, delim)
+    x <- open(x)
+    fmt <- paste0("%0", nchar(x$length), "d")
+    ctr <- 1L
+    while(!eoi(x)) {
+        x <- stepNext(x)
+        e <- getElem(x)
+        con <- file(file.path(dir, sprintf(fmt, ctr)))
+        writeLines(e$content, con)
         close(con)
+        ctr <- ctr + 1L
     }
+    x <- close(x)
     invisible(TRUE)
 }
 
@@ -50,7 +39,23 @@ function(x, removeQuoteHeader = FALSE)
 }
 
 removeCitation.MailDocument <-
-    content_transformer(removeCitation.character)
+    content_transformer(.removeCitation_MailDocument_content)
+
+.removeCitation_MailDocument_content <-
+function(x, removeQuoteHeader = FALSE)
+{
+    f <- function(e)
+        removeCitation.character(e, removeQuoteHeader)
+    if(is.null(s <- names(x)))
+        return(f(x))
+    i <- which(s == "plain")
+    if(any(i)) {
+        x[i] <- vapply(strsplit(x[i], "\n", fixed = TRUE),
+                       function(e) paste(f(e), collapse = "\n"),
+                       "")
+    }
+    x
+}
 
 ## Remove non-text parts from multipart e-mail messages
 removeMultipart <-
@@ -93,8 +98,17 @@ function(x)
     if (!length(r)) x else r
 }
 
+.removeMultipart_MailDocument_content <-
+function(x)
+{
+    if(is.null(names(x)))
+        removeMultipart.character(x)
+    else
+        x
+}
+
 removeMultipart.MailDocument <-
-    content_transformer(removeMultipart.character)
+    content_transformer(.removeMultipart_MailDocument_content)
 
 # Remove e-mail signatures
 removeSignature <-
@@ -123,8 +137,24 @@ function(x, marks = character())
     else
         x
 }
+
+.removeSignature_MailDocument_content <-
+function(x, marks = character())
+{
+    f <- function(e) removeSignature.character(e, marks)
+    if(is.null(s <- names(x)))
+        return(f(x))
+    i <- which(s == "plain")
+    if(any(i)) {
+        x[i] <- vapply(strsplit(x[i], "\n", fixed = TRUE),
+                       function(e) paste(f(e), collapse = "\n"),
+                       "")
+    }
+    x
+}
+
 removeSignature.MailDocument <-
-    content_transformer(removeSignature.character)
+    content_transformer(.removeSignature_MailDocument_content)
 
 get.thread.id <-
 function(parentID, ht)
