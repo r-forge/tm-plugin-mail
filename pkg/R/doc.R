@@ -1,5 +1,3 @@
-## Author: Ingo Feinerer
-
 ## E-mail document
 MailDocument <-
 function(x = character(),
@@ -13,10 +11,29 @@ function(x = character(),
          origin = character(),
          ...,
          meta = NULL)
-    PlainTextDocument(x,
-                      author, datetimestamp, description, heading, id,
-                      language, origin,
-                      header = header,
-                      ...,
-                      meta = meta,
-                      class = "MailDocument")
+{
+    ## Argh.
+    ## As of 2024-08, tm::PlainTextDocument() does as.character() on the
+    ## content, which strips all attributes ...
+    y <- PlainTextDocument(x,
+                           author, datetimestamp, description,
+                           heading, id, language, origin,
+                           header = header,
+                           ...,
+                           meta = meta,
+                           class = "MailDocument")
+    names(y$content) <- names(x)
+    y
+}
+
+`content<-.MailDocument` <-
+function(x, value)
+{
+    ## Argh.
+    ## As of 2024-08, tm:::`content<-.PlainTextDocument` does
+    ##   x$content <- as.character(value)
+    ## which strips all attributes ...
+    x$content <- as.character(value)
+    names(x$content) <- names(value)
+    x
+}

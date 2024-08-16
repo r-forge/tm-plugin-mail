@@ -1,3 +1,15 @@
+2024-08-16  Kurt Hornik  <Kurt.Hornik@wu.ac.at>
+
+	* R/reader.R: Redo readMail() using the Python email library.
+
+2024-08-14  Kurt Hornik  <Kurt.Hornik@wu.ac.at>
+
+	* R/source.R: Use bytes.
+	Add support for mbox/mboxo/mboxrd formats.
+	Improve detection of 'From ' lines.
+
+	* DESCRIPTION (Imports): Add reticulate.
+
 2014-04-21  Ingo Feinerer <feinerer@logic.at>
 
 	* ChangeLog: Not maintained as a separate file anymore. Please consult
