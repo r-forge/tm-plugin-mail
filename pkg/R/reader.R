@@ -8,12 +8,12 @@ function(DateFormat = character())
         msg <- tryCatch(.py_msg_from_content(elem$content),
                         error = identity)
         if(inherits(msg, "error"))
-            bad <- conditionMessage(msg)
+            bad <- c(msg = conditionMessage(msg))
         else {
             hdr <- tryCatch(.py_get_hdr_from_msg(msg),
                             error = identity)
             if(inherits(hdr, "error"))
-                bad <- conditionMessage(hdr)
+                bad <- c(hdr = conditionMessage(hdr))
         }
         if(length(bad)) {
             ## Parsing or getting headers failed: let's get the headers
@@ -29,7 +29,7 @@ function(DateFormat = character())
             bdy <- tryCatch(.py_get_bdy_from_msg(msg),
                             error = identity)
             if(inherits(bdy, "error")) {
-                bad <- conditionMessage(bdy)
+                bad <- c(bdy = conditionMessage(bdy))
                 bdy <- character()
             }
         }
@@ -107,6 +107,59 @@ function(x, format = character())
     y
 }
 
+## <NOTE>
+## Decoded MIME body parts (and maybe also header fields?) may contain
+## embedded NULs, which R cannot handle, and for which conversion via
+## py_to_r() throws an "Embedded NUL in string." error.
+## This cannot easily be changed, as it is not clear what should happen
+## with the NULs by default (drop or replace).  We thus try to catch
+## such errors and if they occur replace the NULs by <00>.
+## The code for doing this is based on suggestions/explanations by
+## Tomasz Kalinowski, whose help on this is greatly appreciated.
+## </NOTE>
+
+## The startup code does a variant of
+##   .py_nul_str <- import_builtins(convert = FALSE$chr(0L)
+
+.py_str_to_r_chr <-
+function(s)
+    py_to_r(s$replace(.py_nul_str, "<00>"))
+
+.py_msg_get_content <-
+function(e)
+{
+    ## Call e$get_content(), but handle embedded NUL errors.
+    ## Note that we could simply always call
+    ##   .py_str_to_r_chr(r_to_py(e)$get_content())
+    ## without fancy error catching.
+    y <- tryCatch(e$get_content(), error = identity)
+    if(inherits(y, "error")) {
+        m <- conditionMessage(y)
+        if(m != "Embedded NUL in string.") {
+            ## Unfortunately, no classed error.
+            stop(m, call. = FALSE)
+        }
+        y <- .py_str_to_r_chr(r_to_py(e)$get_content())
+    }
+    y
+}
+
+.py_msg_get_values <-
+function(e)    
+{
+    ## See above for comments.
+    y <- tryCatch(as.list(e$values()), error = identity)
+    if(inherits(y, "error")) {
+        m <- conditionMessage(y)
+        if(conditionMessage(m) != "Embedded NUL in string.") {
+            stop(m, call. = FALSE)
+        }
+        y <- lapply(iterate(r_to_py(e)$values()),
+                    .py_str_to_r_chr)
+    }
+    y
+}
+    
 .py_msg_from_content <-
 function(x)
 {
@@ -117,7 +170,7 @@ function(x)
 .py_get_hdr_from_msg <-
 function(msg)
 {
-    hdr <- as.list(msg$values())
+    hdr <- .py_msg_get_values(msg)
     names(hdr) <- msg$keys()
     hdr
 }
@@ -125,22 +178,22 @@ function(msg)
 .py_get_bdy_from_msg <-
 function(msg)
 {
-    charset <- msg$get_content_charset()
-    ## Avoid
-    ##   LookupError: unknown encoding: X-UNKNOWN
-    ## errors:
-    if(!is.null(charset) &&
-       inherits(tryCatch(.py_codecs$lookup(charset),
-                         error = identity),
-                "error"))
-        msg$set_charset("us-ascii")
-    ## Ideally we'd get encoding with surrogateescapes ...
     one <- function(e) {
+        cc <- e$get_content_charset()
+        ## Avoid
+        ##   LookupError: unknown encoding: X-UNKNOWN
+        ## errors:
+        if(!is.null(cc) &&
+           inherits(tryCatch(.py_codecs$lookup(cc),
+                             error = identity),
+                    "error"))
+            e$set_charset("us-ascii")
+        ## Ideally we'd get encoding with surrogateescapes ...
         ct <- e$get_content_type()
         if(ct == "text/plain")
-            structure(e$get_content(), names = "plain")
+            c(plain = .py_msg_get_content(e))
         else if(ct == "text/html")
-            structure(e$get_content(), names = "html")
+            c(html  = .py_msg_get_content(e))
         else
             character()
     }

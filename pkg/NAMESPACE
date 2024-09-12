@@ -1,8 +1,11 @@
-importFrom("NLP", "content", "content<-", "meta")
+importFrom("NLP",
+           "content", "content<-", "meta")
 importFrom("tm",
            "content_transformer", "PlainTextDocument",
            "SimpleSource", "eoi", "getElem", "stepNext")
-importFrom("reticulate", "import", "iterate")
+importFrom("reticulate",
+           "import", "import_builtins", "iterate",
+           "py_to_r", "r_to_py")
 
 export("convert_mbox_eml",
        "MBoxSource",
